@@ -34,30 +34,6 @@ def getCentroid(traces):
     return sumMixi / sumM, sumMiyi / sumM
 
 
-def resize_image(img, size=(28, 28)):
-    h, w = img.shape[:2]
-    c = img.shape[2] if len(img.shape) > 2 else 1
-
-    if h == w:
-        return cv.resize(img, size, cv.INTER_AREA)
-
-    dif = h if h > w else w
-
-    interpolation = cv.INTER_AREA if dif > (size[0] + size[1]) // 2 else cv.INTER_CUBIC
-
-    x_pos = (dif - w) // 2
-    y_pos = (dif - h) // 2
-
-    if len(img.shape) == 2:
-        mask = np.zeros((dif, dif), dtype=img.dtype)
-        mask[y_pos:y_pos + h, x_pos:x_pos + w] = img[:h, :w]
-    else:
-        mask = np.zeros((dif, dif, c), dtype=img.dtype)
-        mask[y_pos:y_pos + h, x_pos:x_pos + w, :] = img[:h, :w, :]
-
-    return cv.resize(mask, size, interpolation)
-
-
 def generatePlot(traces, j):
     plt.figure(num=None, figsize=(1, 1), dpi=70)
     for trace in traces:
