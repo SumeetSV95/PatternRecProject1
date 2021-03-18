@@ -8,6 +8,9 @@ from bs4 import BeautifulSoup
 from bs4 import element as ele
 from PIL import Image
 import cv2 as cv
+import os
+from skimage.feature import hog
+from skimage import data, exposure
 
 
 class Symbol:
@@ -47,18 +50,13 @@ def generatePlot(traces, j):
     plt.axis('off')
     name = 'test' + str(j) + '.png'
 
-    plt.savefig(name, bbox_inches='tight', pad_inches=0)
+    plt.savefig(name, bbox_inches='tight', pad_inches=0.05)
     plt.close()
-    image = Image.open(name)
-    image = image.transpose(Image.FLIP_TOP_BOTTOM)
-    imArr = np.asarray(image)
-    imArr = 255 - imArr
+    image = cv.imread(name)
+    image = cv.flip(image, 0)
+    image = cv.bitwise_not(image)
 
-    im = Image.fromarray(np.uint8(imArr)).convert('RGB')
-    im.save(name)
-
-    img = cv.imread(name)
-    img = cv.GaussianBlur(img, (3, 3), 1)
+    img = cv.GaussianBlur(image, (5, 5), 1)
     temp = np.zeros((50, 50))
     finalImg = cv.normalize(img, temp, 0, 255, cv.NORM_MINMAX)
 
@@ -96,6 +94,18 @@ def main():
         print(symbol.UI)
         print(symbol.traces)
         generatePlot(symbol.traces, i)
+    for file in os.listdir("/Users/sumeet95/PycharmProjects/pythonProject1"):
+        print(file)
+        if file.endswith(".png"):
+
+            img = Image.open(file)
+            imArr = np.asarray(img)
+            fg, hog_image = hog(imArr, orientations=9, pixels_per_cell=(5, 5), cells_per_block=(1, 1),
+                                block_norm="L2",
+                                visualize=True, )
+            print(fg.shape)
+            hogImage = Image.fromarray(np.uint8(hog_image)).convert('RGB')
+            hogImage.save("feature_"+str(file))
 
 
 # Press the green button in the gutter to run the script.
