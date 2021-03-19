@@ -26,11 +26,11 @@ def generateFeatures(strokes, filename, visualise):
     image = cv.flip(image, 0)
     image = cv.bitwise_not(image)
 
-    img = cv.GaussianBlur(image, (3, 3), 1)
-    temp = np.zeros((50, 50))
-    finalImg = cv.normalize(img, temp, 0, 255, cv.NORM_MINMAX)
+    # img = cv.GaussianBlur(image, (3, 3), 1)
+    # temp = np.zeros((50, 50))
+    # finalImg = cv.normalize(img, temp, 0, 255, cv.NORM_MINMAX)
 
-    cv.imwrite(name, finalImg)
+    cv.imwrite(name, image)
     img = Image.open(name)
     imArr = np.asarray(img)
     if visualise:
