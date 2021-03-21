@@ -1,3 +1,8 @@
+import pickle
+import numpy as np
+from sklearn import svm
+
+
 with open('/content/featureFile','rb') as fp:
   objects = pickle.load(fp)
 features = objects[1]
