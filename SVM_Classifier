@@ -1,0 +1,27 @@
+import pickle
+import numpy as np
+from sklearn import svm
+
+
+with open('/content/featureFile','rb') as fp:
+  objects = pickle.load(fp)
+features = objects[1]
+labels = objects[2]
+train_features = []
+
+all = True
+# code to select features
+
+for i in range(len(features)):
+  train_features.append(features[i][0])
+features = np.asarray(train_features)
+
+clf =svm.SVC(kernel='rbf', probability=True)
+print("Learning started")
+clf.fit(features,labels)
+print("Learning complete")
+correct = 0
+wrong = 0
+featureFile = open("/content/SVM_Model_v2", "wb")
+pickle.dump(clf, featureFile)
+featureFile.close()
