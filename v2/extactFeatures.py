@@ -9,8 +9,7 @@ def generateFeatures(strokes):
     # Plots figure
     fig = plt.figure(num=None, figsize=(1, 1), dpi=70)
     for trace in strokes:
-        for i in range(0, trace.shape[0] - 1):
-            plt.plot((trace[i:i + 2, 0]), trace[i:i + 2, 1], color='black')
+        plt.plot(trace[:, 0], trace[:, 1], color='black')
     plt.axis('equal')
     plt.axis('off')
 
