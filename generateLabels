@@ -3,32 +3,39 @@ from sklearn import svm
 import numpy as np
 
 
-def getmaxProb(classifier, sample,n):
-    probabilities = classifier.predict_proba([sample])[0]
+def getmaxProb(classifier, samples,n):
+  
+    probabilities = classifier.predict_proba(samples)
     classes = classifier.classes_
     selected_classes = set()
     selected_classes_list = []
-    for i in range(n):
+    top_classes = []
+    for k in range(len(probabilities)):
+      selected_classes = set()
+      selected_classes_list = []
+      for i in range(n):
         max_prob= float('-inf')
         index = -1
-        for j in range(len(probabilities)):
-            if probabilities[j]>max_prob and classes[j] not in selected_classes:
-                max_prob = probabilities[j]
-                index = j
-        if len(classes[index])>1:
-            selected_classes_list.append("\\"+classes[index])
+        for j in range(len(probabilities[k])):
+          if probabilities[k][j]>max_prob and classes[j] not in selected_classes:
+            max_prob = probabilities[k][j]
+            index = j
+        if (len(classes[index])>1 and classes[index]!='COMMA') or classes[index]=='{' or classes[index]=='}':
+          selected_classes_list.append("\\"+classes[index])
         else:
-            selected_classes_list.append(classes[index])
+          selected_classes_list.append(classes[index])
         selected_classes.add(classes[index])
-    return selected_classes_list
+      top_classes.append(selected_classes_list)
+    
+        
+    return top_classes
 
 
-with open('featureFile_50dpi_f576','rb') as fp:
+with open('/content/testFeatureFile_70dpi_f1296','rb') as fp:
   data = pickle.load(fp)
 
-with open('SVM_Model_50dpi_f576','rb') as fp:
+with open('/content/SVM_Model','rb') as fp:
     classifier = pickle.load(fp)
-
 features = data[1]
 filenames = data[0]
 classee = data[2]
@@ -38,13 +45,14 @@ for i in range(len(features)):
   train_features.append(features[i][0])
 
 features = np.asarray(train_features)
+
+print(len(features))
 print(len(features[0]))
-print(len(classifier.support_vectors_[0]))
 
 
-with open('test_set_50_dpi_f576','w') as fp:
-    for i in range(len(features)):
-        predicted_classes = getmaxProb(classifier, features[i],10)
-        fp.write(filenames[i]+",")
-        fp.write(",".join(predicted_classes)+'\n')
+with open('test_data_predictions_dpi_f576_svm_ovr_rbf_removedErrors','w') as fp:
+  predicted_classes = getmaxProb(classifier, features,10)
+  for i in range(len(features)):
+    fp.write(filenames[i]+",")
+    fp.write(",".join(predicted_classes[i])+'\n')
 
