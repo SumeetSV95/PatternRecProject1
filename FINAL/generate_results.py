@@ -40,9 +40,9 @@ def find_labels(preprocess, isSVM):
     # ---------------------------------------------------------------------------------------------------
     model_file = ""
     if isSVM:
-        model_file += "SVM_"
+        model_file += "SVM"
     else:
-        model_file += "RFC_"
+        model_file += "RFC"
     if preprocess:
         model_file += "_preprocessing"
 
