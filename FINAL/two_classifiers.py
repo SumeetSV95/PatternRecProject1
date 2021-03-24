@@ -4,6 +4,7 @@ import time
 
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
 
 
 def do_random_forest(features, labels):
@@ -15,9 +16,10 @@ def do_random_forest(features, labels):
     return clf
 
 
-def do_svm():
-    return 0
-
+def do_svm(features, labels):
+    clf = SVC(kernel='rbf', probability=True, decision_function_shape='ovr',break_ties=True)
+    clf.fit(features, labels)
+    return clf
 
 def model(isSVM, preprocess):
     filename = f"features_TRAINING"
@@ -43,7 +45,7 @@ def model(isSVM, preprocess):
     if not isSVM:
         classifier = do_random_forest(features, labels)
     else:
-        classifier = do_svm()
+        classifier = do_svm(features, labels)
 
     """
     num_samples = int(total_samples / nt)
@@ -57,11 +59,11 @@ def model(isSVM, preprocess):
 
     classifier_file = ""
     if isSVM:
-        classifier_file += "SVM_"
+        classifier_file += "SVM_Model"
     else:
-        classifier_file += "RFC_"
+        classifier_file += "RFC_Model"
     if preprocess:
-        classifier_file += "preprocessing"
+        classifier_file += "_preprocessing"
 
     featureFile = open(classifier_file, "wb")
     pickle.dump(classifier, featureFile)
