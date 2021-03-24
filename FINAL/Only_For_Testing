@@ -1,0 +1,63 @@
+import pickle
+from sklearn import svm
+import numpy as np
+
+
+def getmaxProb(classifier, sample,n):
+    '''
+    Given a classifier and a sample returns the top n classes
+    :param classifier: model of the classifier
+    :param sample: the sample
+    :param n: number of classes to be returned
+    :return: list of n classes
+    '''
+    probabilities = classifier.predict_proba([sample])[0]
+    classes = classifier.classes_
+    selected_classes = set()
+    selected_classes_list = []
+    for i in range(n):
+        max_prob= float('-inf')
+        index = -1
+        for j in range(len(probabilities)):
+            if probabilities[j]>max_prob and classes[j] not in selected_classes:
+                max_prob = probabilities[j]
+                index = j
+        if len(classes[index])>1:
+            selected_classes_list.append("\\"+classes[index])
+        else:
+            selected_classes_list.append(classes[index])
+        selected_classes.add(classes[index])
+    return selected_classes_list
+
+
+def main():
+    # read testing file
+    with open('featureFile_50dpi_Testing_f576','rb') as fp:
+        data = pickle.load(fp)
+    # read the model
+    with open('SVM_Model_576','rb') as fp:
+        classifier = pickle.load(fp)
+    features = data[1]
+    filenames = data[0]
+
+    # preprocess the features
+    train_features = []
+    for i in range(len(features)):
+        train_features.append(features[i][0])
+
+    features = np.asarray(train_features)
+
+
+
+    # file to store the classification results
+    with open('final_test','w') as fp:
+        for i in range(len(features)):
+            # go through all the classes
+            predicted_classes = getmaxProb(classifier, features[i],10)
+            fp.write(filenames[i]+",")
+            fp.write(",".join(predicted_classes)+'\n')
+
+
+if __name__ == '__main__':
+    main()
+
